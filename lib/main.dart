@@ -4,6 +4,8 @@ import 'features/auth/screens/onboarding_screen.dart';
 import 'features/auth/screens/login.dart';
 import 'features/auth/screens/signup.dart';
 import 'features/navigation/main_navigation.dart';
+import 'package:myapp/features/navigation/edit_profile.dart';
+import 'package:myapp/features/navigation/profile.dart';
 import 'features/auth/screens/pregnancy_tracker.dart';
 import 'features/doctors/screens/doctor_listing_screen.dart';
 import 'features/doctors/screens/doctor_details_screen.dart';
@@ -49,6 +51,8 @@ class MyApp extends StatelessWidget {
         '/product-details': (_) => const ProductDetailsScreen(),
         '/cart': (_) => const CartScreen(),
         '/order-confirmation': (_) => const OrderConfirmationScreen(),
+        '/profile': (_) => const ProfileScreen(),
+        '/edit-profile': (_) => const EditProfileScreen(),
       },
     );
   }
