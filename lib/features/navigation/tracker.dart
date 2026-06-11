@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/app_colors.dart';
 
 class TrackerScreen extends StatefulWidget {
   const TrackerScreen({super.key});
@@ -8,19 +9,46 @@ class TrackerScreen extends StatefulWidget {
 }
 
 class _TrackerScreenState extends State<TrackerScreen> {
-  final List<Map<String, dynamic>> checklist = [
-    {"title": "Drink 8 glasses of water", "completed": true},
-    {"title": "Take prenatal vitamins", "completed": false},
-    {"title": "30 minutes walk", "completed": true},
-    {"title": "Track baby movement", "completed": false},
-  ];
+  final TextEditingController initialWeightController = TextEditingController(
+    text: "65",
+  );
+
+  final TextEditingController currentWeightController = TextEditingController(
+    text: "70",
+  );
+
+  double weightGain = 5;
+
+  int waterCount = 5;
+
+  bool hydrated = false;
+  bool appointment = false;
+  bool stretches = false;
+  bool vitamins = false;
+
+  void calculateWeightGain() {
+    final initial = double.tryParse(initialWeightController.text) ?? 0;
+
+    final current = double.tryParse(currentWeightController.text) ?? 0;
+
+    setState(() {
+      weightGain = current - initial;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xfff7f7f7),
 
-      appBar: AppBar(title: const Text("Pregnancy Tracker")),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          "Pregnancy Tracker",
+          style: TextStyle(color: Colors.black),
+        ),
+      ),
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -28,40 +56,41 @@ class _TrackerScreenState extends State<TrackerScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Progress Card
+            /// PROGRESS CARD
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
-
               decoration: BoxDecoration(
-                color: const Color(0xFF8E5A9B),
+                color: AppColors.primary,
                 borderRadius: BorderRadius.circular(20),
               ),
-
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    "Current Pregnancy",
+                    "Pregnancy Progress",
                     style: TextStyle(color: Colors.white70),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
 
                   const Text(
                     "Week 24",
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 30,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
 
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 12),
 
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: LinearProgressIndicator(value: 0.60, minHeight: 10),
+                    borderRadius: BorderRadius.circular(10),
+                    child: const LinearProgressIndicator(
+                      value: 0.60,
+                      minHeight: 10,
+                    ),
                   ),
 
                   const SizedBox(height: 10),
@@ -74,147 +103,307 @@ class _TrackerScreenState extends State<TrackerScreen> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
 
-            // Weight Section
+            /// WEIGHT TRACKER
             const Text(
-              "Weight Tracking",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              "Enter your weight information below:",
+              style: TextStyle(fontWeight: FontWeight.w500),
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 15),
 
-            Row(
-              children: [
-                Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Column(
-                        children: const [
-                          Text("Initial", style: TextStyle(color: Colors.grey)),
-                          SizedBox(height: 8),
-                          Text(
-                            "60kg",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-                Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Column(
-                        children: const [
-                          Text("Current", style: TextStyle(color: Colors.grey)),
-                          SizedBox(height: 8),
-                          Text(
-                            "67.5kg",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 20),
-
-            // Baby Growth
-            const Text(
-              "Baby Growth",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-
-            const SizedBox(height: 10),
-
-            Card(
-              child: ListTile(
-                leading: Icon(Icons.child_care, color: Color(0xFF8E5A9B)),
-                title: Text("Baby Size"),
-                subtitle: Text("As big as a Corn 🌽"),
+            TextField(
+              controller: initialWeightController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: "Initial Weight",
+                suffixText: "kg",
+                border: OutlineInputBorder(),
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
 
-            // Weekly Milestones
-            const Text(
-              "Weekly Milestones",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            TextField(
+              controller: currentWeightController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: "Current Weight",
+                suffixText: "kg",
+                border: OutlineInputBorder(),
+              ),
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 15),
 
-            Card(
-              child: Padding(
-                padding: EdgeInsets.all(16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade400),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
                 child: Text(
-                  "Your baby is developing stronger hearing and may respond to sounds.",
+                  "${weightGain.toStringAsFixed(0)} kg",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
 
-            // Checklist
-            const Text(
-              "Weekly Checklist",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-
-            const SizedBox(height: 10),
-
-            ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: checklist.length,
-              itemBuilder: (context, index) {
-                return CheckboxListTile(
-                  value: checklist[index]["completed"],
-                  title: Text(checklist[index]["title"]),
-                  onChanged: (value) {
-                    setState(() {
-                      checklist[index]["completed"] = value;
-                    });
-                  },
-                );
-              },
-            ),
-
-            const SizedBox(height: 20),
-
-            // Appointment Card
-            const Text(
-              "Next Appointment",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-
-            const SizedBox(height: 10),
-
-            Card(
-              child: ListTile(
-                leading: CircleAvatar(child: Icon(Icons.event)),
-                title: Text("Antenatal Checkup"),
-                subtitle: Text("12 June 2026 • 10:00 AM"),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                ),
+                onPressed: calculateWeightGain,
+                child: const Text(
+                  "Calculate",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
 
             const SizedBox(height: 30),
+
+            const Text(
+              "Here's what's happening in your body this week:",
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
+
+            const SizedBox(height: 15),
+
+            /// BABY DEVELOPMENT CARD
+            _infoCard(
+              image: "assets/images/baby_week24.jpg",
+              text:
+                  "Your baby's eyes are starting to open, and they're practicing breathing.",
+              imageLeft: true,
+            ),
+
+            const SizedBox(height: 15),
+
+            /// MOTHER BODY CHANGES
+            _infoCard(
+              image: "assets/images/body_changes.jpg",
+              text:
+                  "Back pain, leg cramps, and vivid dreams are common this week.",
+              imageLeft: false,
+            ),
+
+            const SizedBox(height: 30),
+
+            /// HYDRATION TRACKER
+            const Text(
+              "Hydration Tracker",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 10),
+
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(95, 105, 31, 124),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                children: [
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: List.generate(
+                      8,
+                      (index) => Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.local_drink,
+                            size: 35,
+                            color: index < waterCount
+                                ? AppColors.primary
+                                : Colors.white,
+                          ),
+
+                          const SizedBox(height: 4),
+
+                          Icon(
+                            Icons.check,
+                            color: index < waterCount
+                                ? Colors.green
+                                : Colors.white,
+                            size: 16,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircleAvatar(
+                        radius: 15,
+                        backgroundColor: Colors.white,
+                        child: IconButton(
+                          padding: EdgeInsets.zero,
+                          icon: const Icon(Icons.remove, size: 16),
+                          onPressed: () {
+                            if (waterCount > 0) {
+                              setState(() {
+                                waterCount--;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+
+                      const SizedBox(width: 15),
+
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          if (waterCount < 8) {
+                            setState(() {
+                              waterCount++;
+                            });
+                          }
+                        },
+                        icon: const Icon(Icons.add),
+                        label: const Text("Add"),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 30),
+
+            /// WEEKLY CHECKLIST
+            const Text(
+              "Weekly Checklist",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 10),
+
+            _checklistTile(
+              "Stay hydrated; aim for 8+ glasses of water daily",
+              hydrated,
+              (value) {
+                setState(() {
+                  hydrated = value ?? false;
+                });
+              },
+            ),
+
+            _checklistTile(
+              "Book your next antenatal appointment",
+              appointment,
+              (value) {
+                setState(() {
+                  appointment = value ?? false;
+                });
+              },
+            ),
+
+            _checklistTile("Do 15 minutes of pelvic stretches", stretches, (
+              value,
+            ) {
+              setState(() {
+                stretches = value ?? false;
+              });
+            }),
+
+            _checklistTile("Take prenatal vitamins", vitamins, (value) {
+              setState(() {
+                vitamins = value ?? false;
+              });
+            }),
+
+            const SizedBox(height: 30),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _infoCard({
+    required String image,
+    required String text,
+    required bool imageLeft,
+  }) {
+    return Container(
+      height: 140,
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: imageLeft
+            ? [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(
+                    image,
+                    width: 160,
+                    height: 140,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      text,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ]
+            : [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      text,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(
+                    image,
+                    width: 160,
+                    height: 140,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ],
+      ),
+    );
+  }
+
+  Widget _checklistTile(String title, bool value, Function(bool?) onChanged) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: CheckboxListTile(
+        value: value,
+        onChanged: onChanged,
+        title: Text(title, style: const TextStyle(color: Colors.white)),
+        controlAffinity: ListTileControlAffinity.leading,
       ),
     );
   }
