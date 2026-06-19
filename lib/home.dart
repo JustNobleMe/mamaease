@@ -315,7 +315,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   imagePath: "assets/images/exercises.png",
                   title: "Exercises",
                   subtitle: "Stay active safely",
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pushNamed(context, '/exercise');
+                  },
                 ),
 
                 _actionCard(

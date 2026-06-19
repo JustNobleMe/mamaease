@@ -9,6 +9,7 @@ import 'package:myapp/features/navigation/profile.dart';
 import 'features/auth/screens/pregnancy_tracker.dart';
 import 'features/doctors/screens/doctor_listing_screen.dart';
 import 'features/doctors/screens/doctor_details_screen.dart';
+import 'package:myapp/features/exercise/screens/exercise_screen.dart';
 import 'features/doctors/screens/appointment_booking_screen.dart';
 import 'features/doctors/screens/booking_success_screen.dart';
 import 'package:myapp/features/midwives/screens/midwife_listing_screen.dart';
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const MainNavigationScreen(),
         '/pregnancy-tracker': (context) => const PregnancyTrackerScreen(),
         '/doctors': (context) => const DoctorListingScreen(),
+        '/exercise': (context) => const ExerciseScreen(),
         '/doctor-details': (_) => const DoctorDetailsScreen(),
         '/book-appointment': (_) => const AppointmentBookingScreen(),
         '/booking-success': (_) => const BookingSuccessScreen(),
