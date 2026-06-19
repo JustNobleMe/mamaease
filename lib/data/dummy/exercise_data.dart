@@ -15,21 +15,21 @@ class ExerciseVideo {
 final List<ExerciseVideo> exerciseVideos = [
   ExerciseVideo(
     title: "Pregnancy Exercise For Normal Delivery",
-    thumbnail: "https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg",
+    thumbnail: "assets/images/exercises.png",
     duration: "20 Minutes",
-    youtubeUrl: "https://www.youtube.come/watch?v=dQw4w9WgXcQ",
+    youtubeUrl: "https://www.youtube.com/watch?v=pH7sWPBsyiM",
   ),
   ExerciseVideo(
     title: "Best Pregnancy Exercises For Normal Delivery",
-    thumbnail: "https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg",
+    thumbnail: "assets/images/exercises.png",
     duration: "20 Minutes",
-    youtubeUrl: "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+    youtubeUrl: "https://www.youtube.com/watch?v=YWt3qH-glTw",
   ),
 
   ExerciseVideo(
     title: "Week 37 Full Body Prenatal Workout",
-    thumbnail: "https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg",
+    thumbnail: "assets/images/exercises.png",
     duration: "25 Minutes",
-    youtubeUrl: "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    youtubeUrl: "https://www.youtube.com/watch?v=Z66rhf26XNs",
   ),
 ];

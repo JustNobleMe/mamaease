@@ -39,7 +39,12 @@ class ExerciseCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.network(exercise.thumbnail, fit: BoxFit.cover),
+          Image.asset(
+            exercise.thumbnail,
+            width: double.infinity,
+            height: 220,
+            fit: BoxFit.cover,
+          ),
 
           Padding(
             padding: const EdgeInsets.all(12),
