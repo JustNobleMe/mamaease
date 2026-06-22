@@ -17,25 +17,28 @@ samples, guidance on mobile development, and a full API reference.
 flutter build ipa --release
 ## iOS build via GitHub Actions
 
-This repository includes a GitHub Actions workflow that can build an iOS `.ipa` on a macOS runner.
+This repository includes a GitHub Actions workflow that can build an iOS `.ipa` on a macOS runner using Fastlane for automatic code signing.
 
 - Workflow path: `.github/workflows/build-ios.yml`
 - Trigger: Manual (`workflow_dispatch`) from the Actions tab.
 
-Required repository secrets (set these in Settings → Secrets):
+**To enable iOS builds, set these repository secrets** (Settings → Secrets and variables → Actions):
 
-- `APP_STORE_CONNECT_PRIVATE_KEY` — Base64-encoded contents of your App Store Connect `.p8` key (optional; one way to sign builds).
-- `APP_STORE_CONNECT_KEY_ID` — Key ID for App Store Connect API key.
-- `APP_STORE_CONNECT_ISSUER_ID` — Issuer ID for App Store Connect API key.
+| Secret | Description |
+|--------|-------------|
+| `APPLE_ID` | Your Apple ID email |
+| `APPLE_PASSWORD` | Your Apple ID password |
+| `APPLE_APP_SPECIFIC_PASSWORD` | App-specific password from appleid.apple.com |
+| `APPLE_TEAM_ID` | Your Apple Developer Team ID (e.g., `ABC123DEF4`) |
+| `APPLE_ITC_TEAM_ID` | App Store Connect Team ID (often same as `APPLE_TEAM_ID`) |
 
-Notes:
+**How to get these values:**
+1. Apple ID: Your iCloud/Apple Developer account email
+2. App-specific password: Generate at https://appleid.apple.com/account/manage (requires 2FA)
+3. Team ID: Found in Apple Developer account → Membership
 
-- Building an `.ipa` still requires valid Apple signing credentials and appropriate provisioning profiles.
-- If you need ad-hoc or App Store signing, configure certificates/profiles accordingly or use a service like Fastlane to manage signing.
-
-To run locally on a Mac, use:
-
-```bash
-flutter build ipa --release
-```
+**Notes:**
+- Fastlane will attempt to auto-provision certificates and profiles
+- This workflow uses App Store signing method
+- For local builds on macOS, use: `flutter build ipa --release`
 
