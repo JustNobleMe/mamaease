@@ -1,5 +1,4 @@
 name: Build iOS Simulator
-
 on:
   workflow_dispatch:
 
