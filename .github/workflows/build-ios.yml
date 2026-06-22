@@ -20,7 +20,7 @@ jobs:
         run: flutter pub get
 
       - name: Prepare App Store Connect API key
-        if: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY != '' }}
+        if: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
         env:
           APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
         run: |
