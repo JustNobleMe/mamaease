@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:myapp/app_colors.dart';
+import 'package:myapp/providers/auth_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -99,8 +101,26 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/home');
+                  onPressed: () async {
+                    final auth = context.read<AuthProvider>();
+
+                    final success = await auth.login(
+                      email: emailController.text.trim(),
+                      password: passwordController.text,
+                    );
+                    print('success message: ${success}');
+
+                    if (success) {
+                      if (!mounted) return;
+                      Navigator.pushReplacementNamed(context, '/home');
+                    } else {
+                      if (!mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Invalid email or password'),
+                        ),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
