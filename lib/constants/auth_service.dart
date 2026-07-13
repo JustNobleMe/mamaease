@@ -64,12 +64,22 @@ class AuthService {
   }
 
   Future<void> logout() async {
-    await _storage.logout();
+    await _storage.clearToken();
   }
 
   Future<bool> isLoggedIn() async {
     final token = await _storage.getToken();
 
-    return token != null;
+    if (token == null) {
+      return false;
+    }
+
+    try {
+      await getCurrentUser();
+      return true;
+    } catch (_) {
+      await _storage.clearToken();
+      return false;
+    }
   }
 }

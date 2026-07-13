@@ -13,7 +13,7 @@ class StorageService {
     return await _storage.read(key: tokenKey);
   }
 
-  Future<void> logout() async {
+  Future<void> clearToken() async {
     await _storage.delete(key: tokenKey);
   }
 }

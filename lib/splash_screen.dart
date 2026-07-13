@@ -1,7 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'app_colors.dart';
+import 'package:myapp/app_colors.dart';
+import 'package:myapp/constants/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -11,13 +10,47 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final AuthService _authService = AuthService();
+
   @override
   void initState() {
     super.initState();
+    checkLogin();
+  }
 
-    Timer(const Duration(seconds: 5), () {
-      Navigator.pushReplacementNamed(context, '/onboarding');
-    });
+  Future<void> checkLogin() async {
+    // Keep splash visible for a few seconds
+    await Future.delayed(const Duration(seconds: 3));
+
+    if (!mounted) return;
+
+    try {
+      final loggedIn = await _authService.isLoggedIn();
+
+      if (!mounted) return;
+
+      if (loggedIn) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/home',
+          (route) => false,
+        );
+      } else {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/onboarding',
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/onboarding',
+        (route) => false,
+      );
+    }
   }
 
   @override
@@ -30,8 +63,11 @@ class _SplashScreenState extends State<SplashScreen> {
             children: [
               const Spacer(),
 
-              // Logo
-              Image.asset('assets/images/logo.png', height: 120, width: 120),
+              Image.asset(
+                'assets/images/logo.png',
+                height: 120,
+                width: 120,
+              ),
 
               const SizedBox(height: 8),
 
@@ -49,7 +85,10 @@ class _SplashScreenState extends State<SplashScreen> {
               const Text(
                 'Your Trusted Pregnancy Companion',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: Colors.black54),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.black54,
+                ),
               ),
 
               const SizedBox(height: 40),
@@ -62,7 +101,10 @@ class _SplashScreenState extends State<SplashScreen> {
                 padding: EdgeInsets.only(bottom: 20),
                 child: Text(
                   'Version 1.0.0',
-                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ],
