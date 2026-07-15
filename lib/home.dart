@@ -74,7 +74,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     loadDashboard();
-    print(dashboard);
 
     _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
       if (_pageController.hasClients) {
