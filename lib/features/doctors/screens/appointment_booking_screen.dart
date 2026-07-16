@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../data/dummy/doctors_data.dart';
+import '../model/doctor_model.dart';
+import '../model/appointment_request.dart';
+import '../services/appointment_service.dart';
 
 class AppointmentBookingScreen extends StatefulWidget {
   const AppointmentBookingScreen({super.key});
@@ -9,16 +11,16 @@ class AppointmentBookingScreen extends StatefulWidget {
       _AppointmentBookingScreenState();
 }
 
-class _AppointmentBookingScreenState
-    extends State<AppointmentBookingScreen> {
+class _AppointmentBookingScreenState extends State<AppointmentBookingScreen> {
   DateTime? selectedDate;
 
-  String selectedTime = "10:00 AM";
+  TimeOfDay? selectedTime;
+  final AppointmentService _appointmentService = AppointmentService();
 
+  bool isLoading = false;
   String consultationType = "Video Call";
 
-  final TextEditingController notesController =
-      TextEditingController();
+  final TextEditingController notesController = TextEditingController();
 
   final List<String> availableTimes = [
     "09:00 AM",
@@ -44,35 +46,94 @@ class _AppointmentBookingScreenState
     }
   }
 
+  Future<void> pickTime() async {
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (time != null) {
+      setState(() {
+        selectedTime = time;
+      });
+    }
+  }
+
+  Future<void> confirmAppointment(Doctor doctor) async {
+    if (selectedDate == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Please select a date")));
+      return;
+    }
+
+    if (selectedTime == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Please select a time")));
+      return;
+    }
+
+    final appointmentDate = DateTime(
+      selectedDate!.year,
+      selectedDate!.month,
+      selectedDate!.day,
+      selectedTime!.hour,
+      selectedTime!.minute,
+    );
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      await _appointmentService.bookAppointment(
+        AppointmentRequest(
+          doctorId: doctor.id,
+          midwifeId: null,
+          date: appointmentDate,
+          type: "DOCTOR",
+          notes: notesController.text.trim(),
+        ),
+      );
+
+      if (!mounted) return;
+
+      Navigator.pushReplacementNamed(context, '/booking-success');
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString().replaceFirst("Exception: ", ""))),
+      );
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final Doctor doctor =
-        ModalRoute.of(context)!.settings.arguments as Doctor;
+    final Doctor doctor = ModalRoute.of(context)!.settings.arguments as Doctor;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Book Appointment",
-        ),
-      ),
+      appBar: AppBar(title: const Text("Book Appointment")),
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
 
         child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             // Doctor Card
             Card(
               child: ListTile(
-                leading: const CircleAvatar(
-                  child: Icon(Icons.person),
-                ),
+                leading: const CircleAvatar(child: Icon(Icons.person)),
                 title: Text(doctor.name),
-                subtitle:
-                    Text(doctor.specialty),
+                subtitle: Text(doctor.speciality),
               ),
             ),
 
@@ -81,10 +142,7 @@ class _AppointmentBookingScreenState
             // Date
             const Text(
               "Select Date",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 10),
@@ -93,8 +151,7 @@ class _AppointmentBookingScreenState
               width: double.infinity,
               child: OutlinedButton.icon(
                 onPressed: pickDate,
-                icon:
-                    const Icon(Icons.calendar_month),
+                icon: const Icon(Icons.calendar_month),
                 label: Text(
                   selectedDate == null
                       ? "Choose Date"
@@ -108,90 +165,59 @@ class _AppointmentBookingScreenState
             // Time
             const Text(
               "Select Time",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 10),
-
-            DropdownButtonFormField<String>(
-              value: selectedTime,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: pickTime,
+                icon: const Icon(Icons.access_time),
+                label: Text(
+                  selectedTime == null
+                      ? "Choose Time"
+                      : selectedTime!.format(context),
                 ),
               ),
-              items: availableTimes
-                  .map(
-                    (time) =>
-                        DropdownMenuItem(
-                      value: time,
-                      child: Text(time),
-                    ),
-                  )
-                  .toList(),
-              onChanged: (value) {
-                setState(() {
-                  selectedTime = value!;
-                });
-              },
             ),
-
             const SizedBox(height: 25),
 
             // Consultation Type
             const Text(
               "Consultation Type",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
             RadioListTile(
-              title: const Text(
-                "Video Call",
-              ),
+              title: const Text("Video Call"),
               value: "Video Call",
-              groupValue:
-                  consultationType,
+              groupValue: consultationType,
               onChanged: (value) {
                 setState(() {
-                  consultationType =
-                      value.toString();
+                  consultationType = value.toString();
                 });
               },
             ),
 
             RadioListTile(
-              title: const Text(
-                "Voice Call",
-              ),
+              title: const Text("Voice Call"),
               value: "Voice Call",
-              groupValue:
-                  consultationType,
+              groupValue: consultationType,
               onChanged: (value) {
                 setState(() {
-                  consultationType =
-                      value.toString();
+                  consultationType = value.toString();
                 });
               },
             ),
 
             RadioListTile(
-              title: const Text(
-                "Physical Visit",
-              ),
+              title: const Text("Physical Visit"),
               value: "Physical Visit",
-              groupValue:
-                  consultationType,
+              groupValue: consultationType,
               onChanged: (value) {
                 setState(() {
-                  consultationType =
-                      value.toString();
+                  consultationType = value.toString();
                 });
               },
             ),
@@ -201,10 +227,7 @@ class _AppointmentBookingScreenState
             // Notes
             const Text(
               "Symptoms / Notes",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 10),
@@ -213,11 +236,9 @@ class _AppointmentBookingScreenState
               controller: notesController,
               maxLines: 4,
               decoration: InputDecoration(
-                hintText:
-                    "Describe your symptoms...",
+                hintText: "Describe your symptoms...",
                 border: OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
             ),
@@ -225,20 +246,18 @@ class _AppointmentBookingScreenState
             const SizedBox(height: 30),
 
             // Confirm Button
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/booking-success',
-                  );
-                },
-                child: const Text(
-                  "Confirm Appointment",
-                ),
-              ),
+            ElevatedButton(
+              onPressed: isLoading ? null : () => confirmAppointment(doctor),
+              child: isLoading
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Text("Confirm Appointment"),
             ),
           ],
         ),
